@@ -5,6 +5,7 @@ namespace Gmsh
     #region Enum definitions
     public enum GmshMeshElementType
     {
+        UNKNOWN,
         LINE_2NODE,
         TRIANGLE_3NODE,
         QUAD_4NODE,

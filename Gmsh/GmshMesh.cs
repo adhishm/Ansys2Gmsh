@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
+using System.Linq;
 
 namespace Gmsh
 {
@@ -11,6 +9,7 @@ namespace Gmsh
     {
         ANSYS
     }
+
     public class GmshMesh
     {
         #region Private Fields
@@ -22,6 +21,10 @@ namespace Gmsh
         public List<GmshMeshNode> Nodes { get { return _nodes; } }
         public List<GmshMeshElement> Elements { get { return _elements; } }
         public System.Globalization.CultureInfo Format = new System.Globalization.CultureInfo("en-US");
+        #endregion
+
+        #region Public properties
+
         #endregion
 
         #region Constructor
@@ -71,12 +74,12 @@ namespace Gmsh
         {
             string[] lines = File.ReadAllLines(filename);
 
-            _parseAnsysMeshNodes(lines);
+            int lineCount = _parseAnsysMeshNodes(lines);
+            _parseAnsysMeshElements(lines, lineCount);
         }
 
-        private void _parseAnsysMeshNodes(string[] lines)
+        private int _parseAnsysMeshNodes(string[] lines, int lineCount = 0)
         {
-            int lineCount = 0;
             string firstWord = "";
             while (firstWord != "NBLOCK")
             {
@@ -85,12 +88,13 @@ namespace Gmsh
             }
 
             // Now we are in the zone of the node definitions
-            string[] items = lines[lineCount++].Split('(', ',', ')', 'i', 'e');
-            int numInts = int.Parse(items[1], Format);
-            int sizeInts = int.Parse(items[2], Format);
+            char[] delimiters = new char[] { '(', ',', ')', 'i', 'e' };
+            string[] items = lines[lineCount++].Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
+            int numInts = int.Parse(items[0], Format);
+            int sizeInts = int.Parse(items[1], Format);
             int intLength = numInts * sizeInts;
-            int numFloats = int.Parse(items[3], Format);
-            int floatSize = (int) float.Parse(items[4], Format);
+            int numFloats = int.Parse(items[2], Format);
+            int floatSize = (int) float.Parse(items[3], Format);
 
             _nodes = new List<GmshMeshNode>();
 
@@ -114,20 +118,108 @@ namespace Gmsh
 
             Console.WriteLine(String.Format("Read {0} nodes from file.", nodeCount));
 
+            return lineCount;
+        }
+
+        private int _parseAnsysMeshElements(string[] lines, int lineCount)
+        {
             Console.WriteLine("Reading elements from file.");
 
+            Dictionary<int, GmshMeshElementType> MeshElementIds = new Dictionary<int, GmshMeshElementType>();
+
+            string firstWord = "";
             while (firstWord != "EBLOCK")
             {
-                line = lines[lineCount++];
-                string[] splitLine = line.Split(',', ' ');
-
+                string line = lines[lineCount++];
+                char[] separators = new char[] { ',', ' ' };
+                string[] splitLine = line.Split(separators, StringSplitOptions.RemoveEmptyEntries);
+                firstWord = splitLine.First();
                 if (firstWord == "ET")
                 {
                     // Element type declaration
-
+                    int id = int.Parse(splitLine[1], Format);
+                    string name = splitLine[2];
+                    GmshMeshElementType elementType = _AnsysNameToGmshMeshElementType(name);
+                    if (!MeshElementIds.ContainsKey(id))
+                    {
+                        MeshElementIds.Add(id, elementType);
+                    }
                 }
             }
+
+            Console.WriteLine(String.Format("{0} element types discovered in file.", MeshElementIds.Count));
+
+            string[] items = lines[lineCount++].Split('(', 'i', ')');
+            int numInts = int.Parse(items[1], Format);
+            int sizeInts = int.Parse(items[2], Format);
+
+            char[] delimiter = new char[] { ' ' };
+            _elements = new List<GmshMeshElement>();
+
+            Console.WriteLine("Reading elements from file ...");
+
+            List<string> values = lines[lineCount++].Split(delimiter, StringSplitOptions.RemoveEmptyEntries).ToList();
+            while (values.First() != "-1")
+            {
+                GmshMeshElementType elemType = MeshElementIds[int.Parse(values[1], Format)];
+                if (elemType != GmshMeshElementType.UNKNOWN)
+                {
+                    int nNodes = int.Parse(values[8], Format);
+                    int elemId = int.Parse(values[10], Format);
+
+                    if (values.Count() < (10 + nNodes))
+                    {
+                        var newValues = lines[lineCount++].Split(delimiter, StringSplitOptions.RemoveEmptyEntries);
+                        foreach(var n in newValues)
+                        {
+                            values.Add(n);
+                        }
+                    }
+
+                    List<int> nodeIds = new List<int>();
+
+                    for (int i=0; i<nNodes; ++i)
+                    {
+                        nodeIds.Add(int.Parse(values[11 + i], Format));
+                    }
+
+                    _elements.Add(new GmshMeshElement(elemType, elemId, nodeIds, elemId));
+                }
+
+                values.Clear();
+                values = lines[lineCount++].Split(delimiter, StringSplitOptions.RemoveEmptyEntries).ToList();
+            }
+
+            Console.WriteLine(String.Format("Read {0} elements from file.", _elements.Count));
+
+            return lineCount;
         }
+
+        private GmshMeshElementType _AnsysNameToGmshMeshElementType(string name)
+        {
+            if (name == "SHELL181")
+            {
+                return GmshMeshElementType.QUAD_4NODE;
+            }
+
+            if (name == "SOLID185")
+            {
+                return GmshMeshElementType.HEXA_8NODE;
+            }
+
+            if (name == "SOLID227")
+            {
+                return GmshMeshElementType.TET_10NODE;
+            }
+
+            if (name == "SOLID285")
+            {
+                return GmshMeshElementType.TET_4NODE;
+            }
+
+            return GmshMeshElementType.UNKNOWN;
+        }
+
         #endregion
     }
 }
