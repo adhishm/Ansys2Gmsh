@@ -118,7 +118,7 @@ namespace Gmsh
                     _point.Z = v;
                     break;
                 default:
-                    throw new Exception(String.Format(Resources.Strings.ERR_AMMesoMeshIndexOutOfBounds, i.ToString()));
+                    throw new Exception(String.Format("GmshMeshNode: Index {0} is out of bounds!", i.ToString()));
             }
         }
 
@@ -137,7 +137,7 @@ namespace Gmsh
                 case 2:
                     return _point.Z;
                 default:
-                    throw new Exception(String.Format(Resources.Strings.ERR_AMMesoMeshIndexOutOfBounds, i.ToString()));
+                    throw new Exception(String.Format("GmshMeshNode: Index {0} is out of bounds!", i.ToString()));
             }
         }
 
