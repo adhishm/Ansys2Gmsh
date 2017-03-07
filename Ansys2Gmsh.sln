@@ -5,6 +5,8 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ansys2Gmsh", "Ansys2Gmsh\Ansys2Gmsh.csproj", "{1E43D59D-F5A7-4A01-9773-96D1324BCA7C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gmsh", "Gmsh\Gmsh.csproj", "{64CF180B-202D-4C00-90DE-1A23C0B8E1A5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{1E43D59D-F5A7-4A01-9773-96D1324BCA7C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1E43D59D-F5A7-4A01-9773-96D1324BCA7C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1E43D59D-F5A7-4A01-9773-96D1324BCA7C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{64CF180B-202D-4C00-90DE-1A23C0B8E1A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{64CF180B-202D-4C00-90DE-1A23C0B8E1A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{64CF180B-202D-4C00-90DE-1A23C0B8E1A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{64CF180B-202D-4C00-90DE-1A23C0B8E1A5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

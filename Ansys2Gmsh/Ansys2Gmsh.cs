@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Ansys2Gmsh
 {
-    class Program
+    class Ansys2Gmsh
     {
         static void Main(string[] args)
         {
