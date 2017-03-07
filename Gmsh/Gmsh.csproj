@@ -46,6 +46,10 @@
     <Compile Include="GmshMeshHexaElement.cs" />
     <Compile Include="GmshMeshNode.cs" />
     <Compile Include="GmshMeshQuadElement.cs" />
+    <Compile Include="GmshMeshTet10NodeElement.cs" />
+    <Compile Include="GmshMeshTet4NodeElement.cs" />
+    <Compile Include="GmshMeshTri3NodeElement.cs" />
+    <Compile Include="GmshMeshTri6NodeElement.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

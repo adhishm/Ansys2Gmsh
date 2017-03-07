@@ -8,9 +8,11 @@ namespace Gmsh
         LINE_2NODE,
         TRIANGLE_3NODE,
         QUAD_4NODE,
+        TRIANGLE_6NODE,
         TET_4NODE,
         HEXA_8NODE,
         PRISM_6NODE,
+        TET_10NODE,
     }
     #endregion
 
@@ -37,6 +39,8 @@ namespace Gmsh
             { GmshMeshElementType.TET_4NODE,      4 },
             { GmshMeshElementType.HEXA_8NODE,     5 },
             { GmshMeshElementType.PRISM_6NODE,    6 },
+            { GmshMeshElementType.TRIANGLE_6NODE, 9 },
+            { GmshMeshElementType.TET_10NODE,     11 },
         };
 
         public static Dictionary<int, GmshMeshElementType> CodeToElementType = new Dictionary<int, GmshMeshElementType>()
@@ -47,6 +51,8 @@ namespace Gmsh
             { 4, GmshMeshElementType.TET_4NODE      },
             { 5, GmshMeshElementType.HEXA_8NODE     },
             { 6, GmshMeshElementType.PRISM_6NODE    },
+            { 9, GmshMeshElementType.TRIANGLE_6NODE },
+            { 11, GmshMeshElementType.TET_10NODE    },
         };
 
         public static Dictionary<GmshMeshElementType, int> ElementTypeToNumNodes = new Dictionary<GmshMeshElementType, int>()
@@ -57,6 +63,8 @@ namespace Gmsh
             { GmshMeshElementType.TET_4NODE,      4 },
             { GmshMeshElementType.HEXA_8NODE,     8 },
             { GmshMeshElementType.PRISM_6NODE,    6 },
+            { GmshMeshElementType.TRIANGLE_6NODE, 6 },
+            { GmshMeshElementType.TET_10NODE,     10},
         };
         #endregion
 

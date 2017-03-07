@@ -86,17 +86,46 @@ namespace Gmsh
 
             // Now we are in the zone of the node definitions
             string[] items = lines[lineCount++].Split('(', ',', ')', 'i', 'e');
-            int numInts = int.Parse(items[0], Format);
-            int sizeInts = int.Parse(items[1], Format);
-            int numFloats = int.Parse(items[2], Format);
-            float floatSize = float.Parse(items[3], Format);
+            int numInts = int.Parse(items[1], Format);
+            int sizeInts = int.Parse(items[2], Format);
+            int intLength = numInts * sizeInts;
+            int numFloats = int.Parse(items[3], Format);
+            int floatSize = (int) float.Parse(items[4], Format);
+
+            _nodes = new List<GmshMeshNode>();
+
+            Console.WriteLine("Reading nodes from file.");
 
             int nodeCount = 0;
             string line = lines[lineCount++];
             firstWord = line.Split(',').First();
             while (firstWord != "N")
             {
-                
+                string nodeCoords = line.Substring(intLength);
+                string x_string = nodeCoords.Substring(0, floatSize);
+                string y_string = nodeCoords.Substring(floatSize, floatSize);
+                string z_string = nodeCoords.Substring(2 * floatSize, floatSize);
+
+                _nodes.Add(new GmshMeshNode(double.Parse(x_string, Format), double.Parse(y_string, Format), double.Parse(z_string, Format), ++nodeCount));
+
+                line = lines[lineCount++];
+                firstWord = line.Split(',').First();
+            }
+
+            Console.WriteLine(String.Format("Read {0} nodes from file.", nodeCount));
+
+            Console.WriteLine("Reading elements from file.");
+
+            while (firstWord != "EBLOCK")
+            {
+                line = lines[lineCount++];
+                string[] splitLine = line.Split(',', ' ');
+
+                if (firstWord == "ET")
+                {
+                    // Element type declaration
+
+                }
             }
         }
         #endregion
