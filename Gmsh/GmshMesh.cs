@@ -50,6 +50,8 @@ namespace Gmsh
         #region Public methods
         public void WriteMesh(string filename)
         {
+            Console.WriteLine(String.Format("Writing file {0} ...", filename));
+
             List<string> lines = new List<string>();
 
             lines.Add("$MeshFormat");
@@ -66,6 +68,8 @@ namespace Gmsh
             lines.Add("");
 
             File.WriteAllLines(filename, lines);
+
+            Console.WriteLine(String.Format("Finished writing file {0}", filename));
         }
         #endregion
 
@@ -74,8 +78,10 @@ namespace Gmsh
         {
             string[] lines = File.ReadAllLines(filename);
 
+            Console.WriteLine(String.Format("Parsing file {0}...", filename));
             int lineCount = _parseAnsysMeshNodes(lines);
             _parseAnsysMeshElements(lines, lineCount);
+            Console.WriteLine(String.Format("Finished parsing file {0}.", filename));
         }
 
         private int _parseAnsysMeshNodes(string[] lines, int lineCount = 0)
