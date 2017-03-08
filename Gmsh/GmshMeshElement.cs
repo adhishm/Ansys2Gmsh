@@ -111,6 +111,13 @@ namespace Gmsh
 
             return s;
         }
+
+        public HashSet<int> GetUniqueNodeIds()
+        {
+            HashSet<int> uniqueIds = new HashSet<int>();
+            _nodes.ForEach(id => uniqueIds.Add(id));
+            return uniqueIds;
+        }
         #endregion
 
         #region Private methods

@@ -34,12 +34,16 @@ namespace Gmsh
             _elements = elements;
         }
 
-        public GmshMesh(string filename, ImportFromType importType = ImportFromType.ANSYS)
+        public GmshMesh(string filename, ImportFromType importType, bool tetrahedralizeMergedQuads)
         {
             switch(importType)
             {
                 case ImportFromType.ANSYS:
                     _parseAnsysMeshFile(filename);
+                    if (tetrahedralizeMergedQuads)
+                    {
+                        _tetrahedralizeMergedQuads();
+                    }
                     break;
                 default:
                     break;
@@ -76,6 +80,12 @@ namespace Gmsh
         #region Private methods
         private void _parseAnsysMeshFile(string filename)
         {
+            if (!File.Exists(filename))
+            {
+                Console.WriteLine(String.Format("Unknown file or command {0}. Skipping.", filename));
+                return;
+            }
+
             string[] lines = File.ReadAllLines(filename);
 
             Console.WriteLine(String.Format("Parsing file {0}...", filename));
@@ -226,6 +236,71 @@ namespace Gmsh
 
             return GmshMeshElementType.UNKNOWN;
         }
+
+        private void _tetrahedralizeMergedQuads()
+        {
+            Console.WriteLine("Tetrahedralizing...");
+
+            int numElements = Elements.Count;
+            int triangulatedQuads = 0;
+            int tetrahedrealizedHexes = 0;
+
+            for (int i=0; i<numElements; ++i)
+            {
+                GmshMeshElement e = Elements[i];
+
+                switch(e.ElementType)
+                {
+                    case GmshMeshElementType.QUAD_4NODE:
+                        {
+                            HashSet<int> uniqueIds = e.GetUniqueNodeIds();
+
+                            if (uniqueIds.Count != GmshMeshElement.ElementTypeToNumNodes[GmshMeshElementType.QUAD_4NODE])
+                            {
+                                // There are repeated nodes
+                                if (uniqueIds.Count == GmshMeshElement.ElementTypeToNumNodes[GmshMeshElementType.TRIANGLE_3NODE])
+                                {
+                                    GmshMeshTri3NodeElement eTri3Node = new GmshMeshTri3NodeElement(e.ID, uniqueIds.ToList(), e.ElementaryTag, e.PhysicalTag);
+                                    Elements[i] = eTri3Node;
+                                    ++triangulatedQuads;
+                                }
+                                else
+                                {
+                                    Console.WriteLine(String.Format("Quad element id {0} has {1} unique nodes. Cannot convert to triangle.", e.ID, uniqueIds.Count));
+                                }
+                            }
+                        }
+                        break;
+                    case GmshMeshElementType.HEXA_8NODE:
+                        {
+                            HashSet<int> uniqueIds = e.GetUniqueNodeIds();
+
+                            if (uniqueIds.Count != GmshMeshElement.ElementTypeToNumNodes[GmshMeshElementType.HEXA_8NODE])
+                            {
+                                // There are repeated nodes
+                                if (uniqueIds.Count == GmshMeshElement.ElementTypeToNumNodes[GmshMeshElementType.TET_4NODE])
+                                {
+                                    GmshMeshTet4NodeElement eTri3Node = new GmshMeshTet4NodeElement(e.ID, uniqueIds.ToList(), e.ElementaryTag, e.PhysicalTag);
+                                    Elements[i] = eTri3Node;
+                                    ++tetrahedrealizedHexes;
+                                }
+                                else
+                                {
+                                    Console.WriteLine(String.Format("Hexa element id {0} has {1} unique nodes. Cannot convert to tetrahedron.", e.ID, uniqueIds.Count));
+                                }
+                            }
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            Console.WriteLine("Triangulated {0} quads.", triangulatedQuads);
+            Console.WriteLine("Tetrahedralized {0} hexes.", tetrahedrealizedHexes);
+        }
+
+        
 
         #endregion
     }
