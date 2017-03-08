@@ -166,6 +166,7 @@ namespace Gmsh
                 {
                     int nNodes = int.Parse(values[8], Format);
                     int elemId = int.Parse(values[10], Format);
+                    int phys_tag = int.Parse(values[2], Format);
 
                     if (values.Count() < (10 + nNodes))
                     {
@@ -183,7 +184,7 @@ namespace Gmsh
                         nodeIds.Add(int.Parse(values[11 + i], Format));
                     }
 
-                    _elements.Add(new GmshMeshElement(elemType, elemId, nodeIds, elemId));
+                    _elements.Add(new GmshMeshElement(elemType, elemId, nodeIds, elemId, phys_tag));
                 }
 
                 values.Clear();
