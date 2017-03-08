@@ -200,7 +200,7 @@ namespace Gmsh
                         nodeIds.Add(int.Parse(values[11 + i], Format));
                     }
 
-                    _elements.Add(new GmshMeshElement(elemType, elemId, nodeIds, elemId, phys_tag));
+                    _elements.Add(new GmshMeshElement(elemType, elemId, nodeIds, phys_tag, phys_tag));
                 }
 
                 values.Clear();
