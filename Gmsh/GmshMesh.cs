@@ -75,6 +75,17 @@ namespace Gmsh
 
             Console.WriteLine(String.Format("Finished writing file {0}", filename));
         }
+
+        public void ConvertMeshUnits(ConvertLengths convert)
+        {
+            Nodes.ForEach(node =>
+            {
+                node.SetX(convert.Convert(node.Point.X));
+                node.SetY(convert.Convert(node.Point.Y));
+                node.SetZ(convert.Convert(node.Point.Z));
+            }
+            );
+        }
         #endregion
 
         #region Private methods
