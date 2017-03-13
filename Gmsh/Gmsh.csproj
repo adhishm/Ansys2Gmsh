@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConvertLengths.cs" />
     <Compile Include="GmshMesh.cs" />
     <Compile Include="GmshMeshElement.cs" />
     <Compile Include="GmshMeshHexaElement.cs" />
