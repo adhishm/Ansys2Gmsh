@@ -10,10 +10,13 @@ Example:
 Ansys2Gmsh.exe file1.inp file2.inp file3.inp -correct -convert inch meter
 
 Supported elements for this version:
-SHELL181 --> Quad 4-node
-SOLID185 --> Hexa 8-node
-SOLID227 --> Tetra 10-node
-SOLID285 --> Tetra 4-node
+Quad 4-node --> PLANE13, PLANE25, PLANE55, PLANE75, PLANE162, PLANE182, SHELL28, SHELL41, SHELL131, SHELL157, SHELL163, SHELL181
+Quad 8-node --> PLANE53, PLANE77, PLANE78, PLANE83, PLANE121, PLANE183, PLANE223, PLANE230, PLANE233, PLANE238, SHELL132, SHELL281
+Hexa 8-node --> SOLID5, SOLID65, SOLID70, SOLID96, SOLID97, SOLID164, SOLID185, SOLID278
+Hexa 20-node --> SOLID90, SOLID122, SOLID186, SOLID226, SOLID231, SOLID236, SOLID239, SOLID279
+Tetra 4-node --> SOLID285
+Tetra 10-node --> SOLID87, SOLID98, SOLID123, SOLID168, SOLID187, SOLID227, SOLID232, SOLID237, SOLID240
+
 
 The following unit names (the words in the "") are accepted:
 KILOMETER : { "km", "KM", "Km", "kilometer", "Kilometer", "kilometre", "Kilometre" }
