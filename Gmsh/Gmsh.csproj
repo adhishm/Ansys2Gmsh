@@ -44,9 +44,11 @@
     <Compile Include="ConvertLengths.cs" />
     <Compile Include="GmshMesh.cs" />
     <Compile Include="GmshMeshElement.cs" />
+    <Compile Include="GmshMeshHexa20NodeElement.cs" />
     <Compile Include="GmshMeshHexaElement.cs" />
     <Compile Include="GmshMeshNode.cs" />
-    <Compile Include="GmshMeshQuadElement.cs" />
+    <Compile Include="GmshMeshQuad4NodeElement.cs" />
+    <Compile Include="GmshMeshQuad8NodeElement.cs" />
     <Compile Include="GmshMeshTet10NodeElement.cs" />
     <Compile Include="GmshMeshTet4NodeElement.cs" />
     <Compile Include="GmshMeshTri3NodeElement.cs" />

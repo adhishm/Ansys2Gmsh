@@ -2,13 +2,13 @@
 
 namespace Gmsh
 {
-    public class GmshMeshQuadElement : GmshMeshElement
+    public class GmshMeshQuad4NodeElement : GmshMeshElement
     {
         #region Private Fields
         #endregion
 
         #region Constructor
-        public GmshMeshQuadElement(int id, List<int> nodes, int elem_tag, int phys_tag)
+        public GmshMeshQuad4NodeElement(int id, List<int> nodes, int elem_tag, int phys_tag)
             : base(GmshMeshElementType.QUAD_4NODE, id, nodes, elem_tag, phys_tag)
         { }
         #endregion

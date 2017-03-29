@@ -225,27 +225,14 @@ namespace Gmsh
 
         private GmshMeshElementType _AnsysNameToGmshMeshElementType(string name)
         {
-            if (name == "SHELL181")
+            if (GmshMeshElement.Ansys2GmshMeshElementTypes.ContainsKey(name))
             {
-                return GmshMeshElementType.QUAD_4NODE;
+                return GmshMeshElement.Ansys2GmshMeshElementTypes[name];
             }
-
-            if (name == "SOLID185")
+            else
             {
-                return GmshMeshElementType.HEXA_8NODE;
+                return GmshMeshElementType.UNKNOWN;
             }
-
-            if (name == "SOLID227")
-            {
-                return GmshMeshElementType.TET_10NODE;
-            }
-
-            if (name == "SOLID285")
-            {
-                return GmshMeshElementType.TET_4NODE;
-            }
-
-            return GmshMeshElementType.UNKNOWN;
         }
 
         private void _tetrahedralizeMergedQuads()
@@ -300,6 +287,11 @@ namespace Gmsh
                                     Console.WriteLine(String.Format("Hexa element id {0} has {1} unique nodes. Cannot convert to tetrahedron.", e.ID, uniqueIds.Count));
                                 }
                             }
+                        }
+                        break;
+                    case GmshMeshElementType.QUAD_8NODE:
+                        {
+
                         }
                         break;
                     default:
