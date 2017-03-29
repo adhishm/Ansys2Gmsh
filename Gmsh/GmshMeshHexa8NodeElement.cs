@@ -2,13 +2,13 @@
 
 namespace Gmsh
 {
-    public class GmshMeshHexaElement : GmshMeshElement
+    public class GmshMeshHexa8NodeElement : GmshMeshElement
     {
         #region Private Fields
         #endregion
         
         #region Constructor
-        public GmshMeshHexaElement(int id, List<int> nodes, int elem_tag, int phys_tag)
+        public GmshMeshHexa8NodeElement(int id, List<int> nodes, int elem_tag, int phys_tag)
             : base(GmshMeshElementType.HEXA_8NODE, id, nodes, elem_tag, phys_tag)
         { }
         #endregion

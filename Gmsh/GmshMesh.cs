@@ -42,7 +42,8 @@ namespace Gmsh
                     _parseAnsysMeshFile(filename);
                     if (tetrahedralizeMergedQuads)
                     {
-                        _tetrahedralizeMergedQuads();
+                        // _tetrahedralizeMergedQuads();
+                        _correctMergedElements();
                     }
                     break;
                 default:
@@ -235,6 +236,42 @@ namespace Gmsh
             }
         }
 
+        private void _correctMergedElements()
+        {
+            Console.WriteLine("Correcting merged elements...");
+
+            int numElements = Elements.Count;
+            int correctionCount = 0;
+
+            for (int i = 0; i < numElements; ++i)
+            {
+                GmshMeshElement e = Elements[i];
+                if (GmshMeshElement.MergedElementConversionTable.ContainsKey(e.ElementType))
+                {
+                    // This is an element that may be corrected
+                    GmshMeshElementType correctedType = GmshMeshElement.MergedElementConversionTable[e.ElementType];
+                    HashSet<int> uniqueIds = e.GetUniqueNodeIds();
+                    if (uniqueIds.Count != GmshMeshElement.ElementTypeToNumNodes[e.ElementType])
+                    {
+                        // There are merged nodes
+                        if (uniqueIds.Count == GmshMeshElement.ElementTypeToNumNodes[correctedType])
+                        {
+                            // The merging is consistent with the correction
+                            GmshMeshElement correctedElement = new GmshMeshElement(correctedType, e.ID, uniqueIds.ToList(), e.ElementaryTag, e.PhysicalTag);
+                            Elements[i] = correctedElement;
+                            ++correctionCount;
+                        }
+                        else
+                        {
+                            Console.WriteLine(string.Format("Input element id {0} has {1} unique nodes, inconsistent with corrected element that expects {2} unique nodes. Skipping.", e.ID, uniqueIds.Count, GmshMeshElement.ElementTypeToNumNodes[correctedType]));
+                        }
+                    }
+                }
+            }                
+
+            Console.WriteLine(string.Format("Corrected {0} elements.", correctionCount));
+        }
+
         private void _tetrahedralizeMergedQuads()
         {
             Console.WriteLine("Tetrahedralizing...");
@@ -269,6 +306,26 @@ namespace Gmsh
                             }
                         }
                         break;
+                    case GmshMeshElementType.QUAD_8NODE:
+                        {
+                            HashSet<int> uniqueIds = e.GetUniqueNodeIds();
+
+                            if (uniqueIds.Count != GmshMeshElement.ElementTypeToNumNodes[GmshMeshElementType.QUAD_8NODE])
+                            {
+                                // There are repeated nodes
+                                if (uniqueIds.Count == GmshMeshElement.ElementTypeToNumNodes[GmshMeshElementType.TRIANGLE_6NODE])
+                                {
+                                    GmshMeshTri6NodeElement eTri3Node = new GmshMeshTri6NodeElement(e.ID, uniqueIds.ToList(), e.ElementaryTag, e.PhysicalTag);
+                                    Elements[i] = eTri3Node;
+                                    ++triangulatedQuads;
+                                }
+                                else
+                                {
+                                    Console.WriteLine(String.Format("Quad element id {0} has {1} unique nodes. Cannot convert to triangle.", e.ID, uniqueIds.Count));
+                                }
+                            }
+                        }
+                        break;
                     case GmshMeshElementType.HEXA_8NODE:
                         {
                             HashSet<int> uniqueIds = e.GetUniqueNodeIds();
@@ -289,9 +346,24 @@ namespace Gmsh
                             }
                         }
                         break;
-                    case GmshMeshElementType.QUAD_8NODE:
+                    case GmshMeshElementType.HEXA_20NODE:
                         {
+                            HashSet<int> uniqueIds = e.GetUniqueNodeIds();
 
+                            if (uniqueIds.Count != GmshMeshElement.ElementTypeToNumNodes[GmshMeshElementType.HEXA_8NODE])
+                            {
+                                // There are repeated nodes
+                                if (uniqueIds.Count == GmshMeshElement.ElementTypeToNumNodes[GmshMeshElementType.TET_4NODE])
+                                {
+                                    GmshMeshTet10NodeElement eTri3Node = new GmshMeshTet10NodeElement(e.ID, uniqueIds.ToList(), e.ElementaryTag, e.PhysicalTag);
+                                    Elements[i] = eTri3Node;
+                                    ++tetrahedrealizedHexes;
+                                }
+                                else
+                                {
+                                    Console.WriteLine(String.Format("Hexa element id {0} has {1} unique nodes. Cannot convert to tetrahedron.", e.ID, uniqueIds.Count));
+                                }
+                            }
                         }
                         break;
                     default:

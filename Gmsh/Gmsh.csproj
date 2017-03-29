@@ -45,7 +45,8 @@
     <Compile Include="GmshMesh.cs" />
     <Compile Include="GmshMeshElement.cs" />
     <Compile Include="GmshMeshHexa20NodeElement.cs" />
-    <Compile Include="GmshMeshHexaElement.cs" />
+    <Compile Include="GmshMeshHexa8NodeElement.cs" />
+    <Compile Include="GmshMeshLine2NodeElement.cs" />
     <Compile Include="GmshMeshNode.cs" />
     <Compile Include="GmshMeshQuad4NodeElement.cs" />
     <Compile Include="GmshMeshQuad8NodeElement.cs" />

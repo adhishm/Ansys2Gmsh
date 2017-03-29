@@ -137,6 +137,14 @@ namespace Gmsh
             { "SOLID237", GmshMeshElementType.TET_10NODE },
             { "SOLID240", GmshMeshElementType.TET_10NODE },
         };
+
+        public static Dictionary<GmshMeshElementType, GmshMeshElementType> MergedElementConversionTable = new Dictionary<GmshMeshElementType, GmshMeshElementType>()
+        {
+            { GmshMeshElementType.QUAD_4NODE, GmshMeshElementType.TRIANGLE_3NODE },
+            { GmshMeshElementType.QUAD_8NODE, GmshMeshElementType.TRIANGLE_6NODE },
+            { GmshMeshElementType.HEXA_8NODE, GmshMeshElementType.TET_4NODE },
+            { GmshMeshElementType.HEXA_20NODE, GmshMeshElementType.TET_10NODE },
+        };
         #endregion
 
         public int ID { get { return _id; } }
