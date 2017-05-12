@@ -116,7 +116,7 @@ namespace Gmsh
             }
 
             // Now we are in the zone of the node definitions
-            char[] delimiters = new char[] { '(', ',', ')', 'i', 'e' };
+            char[] delimiters = new char[] { '(', ',', ')', 'i', 'e', ' ' };
             string[] items = lines[lineCount++].Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
             int numInts = int.Parse(items[0], Format);
             int sizeInts = int.Parse(items[1], Format);
@@ -126,32 +126,33 @@ namespace Gmsh
 
             _nodes = new List<GmshMeshNode>();
 
-            Console.WriteLine("Reading nodes from file.");
+            Console.WriteLine("Reading nodes from file...");
 
-            int nodeCount = 0;
+            // char[] nodeDelimiters = new char[] { ' ' };
             string line = lines[lineCount++];
-            firstWord = line.Split(',').First();
+            firstWord = line.Split(delimiters, StringSplitOptions.RemoveEmptyEntries).First();
             while (firstWord != "N")
             {
+                int nodeId = int.Parse(firstWord, Format);
                 string nodeCoords = line.Substring(intLength);
                 string x_string = nodeCoords.Substring(0, floatSize);
                 string y_string = nodeCoords.Substring(floatSize, floatSize);
                 string z_string = nodeCoords.Substring(2 * floatSize, floatSize);
 
-                _nodes.Add(new GmshMeshNode(double.Parse(x_string, Format), double.Parse(y_string, Format), double.Parse(z_string, Format), ++nodeCount));
+                _nodes.Add(new GmshMeshNode(double.Parse(x_string, Format), double.Parse(y_string, Format), double.Parse(z_string, Format), nodeId));
 
                 line = lines[lineCount++];
-                firstWord = line.Split(',').First();
+                firstWord = line.Split(delimiters, StringSplitOptions.RemoveEmptyEntries).First();
             }
 
-            Console.WriteLine(String.Format("Read {0} nodes from file.", nodeCount));
+            Console.WriteLine(string.Format("Read {0} nodes from file.", _nodes.Count));
 
             return lineCount;
         }
 
         private int _parseAnsysMeshElements(string[] lines, int lineCount)
         {
-            Console.WriteLine("Reading elements from file.");
+            Console.WriteLine("Reading elements from file...");
 
             Dictionary<int, GmshMeshElementType> MeshElementIds = new Dictionary<int, GmshMeshElementType>();
 
@@ -172,6 +173,10 @@ namespace Gmsh
                     {
                         MeshElementIds.Add(id, elementType);
                     }
+                    else
+                    {
+                        Console.WriteLine(string.Format("Unknown element type {0}. Please contact the developer to get this element included.", name));
+                    }
                 }
             }
 
@@ -180,6 +185,7 @@ namespace Gmsh
             string[] items = lines[lineCount++].Split('(', 'i', ')');
             int numInts = int.Parse(items[1], Format);
             int sizeInts = int.Parse(items[2], Format);
+            int numUnknownElements = 0;
 
             char[] delimiter = new char[] { ' ' };
             _elements = new List<GmshMeshElement>();
@@ -211,15 +217,23 @@ namespace Gmsh
                     {
                         nodeIds.Add(int.Parse(values[11 + i], Format));
                     }
-
+                    
                     _elements.Add(new GmshMeshElement(elemType, elemId, nodeIds, phys_tag, phys_tag));
+                }
+                else
+                {
+                    ++numUnknownElements;
                 }
 
                 values.Clear();
                 values = lines[lineCount++].Split(delimiter, StringSplitOptions.RemoveEmptyEntries).ToList();
             }
 
-            Console.WriteLine(String.Format("Read {0} elements from file.", _elements.Count));
+            Console.WriteLine(string.Format("Read {0} elements from file.", _elements.Count));
+            if (numUnknownElements > 0)
+            {
+                Console.WriteLine(string.Format("Found {0} elements of unknown type in the file.", numUnknownElements));
+            }
 
             return lineCount;
         }
